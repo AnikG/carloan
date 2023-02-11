@@ -1,11 +1,73 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from '@/styles/Home.module.css'
+import Head from "next/head";
+import { Inter } from "@next/font/google";
+import styles from "@/styles/Home.module.css";
+import "@fontsource/public-sans";
+import { CssVarsProvider } from "@mui/joy/styles";
+import Sheet from "@mui/joy/Sheet";
+import FormControl from "@mui/joy/FormControl";
+import FormLabel from "@mui/joy/FormLabel";
+import Input from "@mui/joy/Input";
+import Slider from "@mui/joy/Slider";
+import Table from "@mui/joy/Table";
+import { useState, useEffect } from "react";
 
-const inter = Inter({ subsets: ['latin'] })
+const marks = [
+  {
+    value: 580,
+    label: "Fair",
+    rate: 7.1,
+  },
+  {
+    value: 670,
+    label: "Good",
+    rate: 6.5,
+  },
+  {
+    value: 740,
+    label: "Very Good",
+    rate: 6.0,
+  },
+  {
+    value: 800,
+    label: "Excellent",
+    rate: 5.5,
+  },
+];
+
+function interestRate(creditScore) {
+  return (1000.0 - creditScore) / 100; // TODO: replace this nonsense with a lookup in the marks[]
+}
+
+function valueText(value) {
+  return `${value}`;
+}
+
+function calculatePayment(loanAmount, interestRatePercent, durationMonths) {
+  const monthlyInterestRate = interestRatePercent / 100 / 12;
+  const paymentPerUnit =
+    monthlyInterestRate / (1 - (1 + monthlyInterestRate) ** -durationMonths);
+  const payment = loanAmount * paymentPerUnit;
+  const paymentString = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(payment);
+  return paymentString;
+}
 
 export default function Home() {
+  const initialLoanAmount = 15000;
+  const defaultCreditScore = 600;
+  const [loanAmount, setLoanAmount] = useState(initialLoanAmount);
+  const [creditScore, setCreditScore] = useState(defaultCreditScore);
+  const [paymentAmount, setPaymentAmount] = useState(0);
+
+  useEffect(() => {
+    let payment = parseFloat(loanAmount) + parseFloat(creditScore);
+    setPaymentAmount(payment);
+    console.log(loanAmount, creditScore, payment);
+    return;
+  }, [loanAmount, creditScore]);
+
   return (
     <>
       <Head>
@@ -15,109 +77,111 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>pages/index.js</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
+        <CssVarsProvider>
+          <Sheet
+            sx={{
+              width: 500,
+              height: 500,
+              mx: "auto", // margin left & right
+              my: 4, // margin top & bottom
+              py: 3, // padding top & bottom
+              px: 2, // padding left & right
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              borderRadius: "sm",
+              boxShadow: "md",
+            }}
+          >
+            <FormControl>
+              <FormLabel>Loan amount</FormLabel>
+              <Input
+                // html input attribute
+                name="amount"
+                type="number"
+                placeholder={initialLoanAmount.toString()}
+                onChange={(event) => setLoanAmount(event.target.value)}
               />
-            </a>
-          </div>
-        </div>
-
-        <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
-          <div className={styles.thirteen}>
-            <Image
-              src="/thirteen.svg"
-              alt="13"
-              width={40}
-              height={31}
-              priority
+            </FormControl>
+            <Slider
+              aria-label="Always visible"
+              min={500}
+              max={800}
+              step={10}
+              defaultValue={defaultCreditScore}
+              getAriaValueText={valueText}
+              marks={marks}
+              valueLabelDisplay="auto"
+              //sx={{ mx: 10 }}
+              onChange={(event) => setCreditScore(event.target.value)}
             />
-          </div>
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
-        </div>
+            <Table aria-label="basic table">
+              <thead>
+                <tr>
+                  <th style={{ width: "40%" }}>Months</th>
+                  <th>Payment</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>36</td>
+                  <td>
+                    {calculatePayment(
+                      loanAmount,
+                      interestRate(creditScore),
+                      36
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>48</td>
+                  <td>
+                    {" "}
+                    {calculatePayment(
+                      loanAmount,
+                      interestRate(creditScore),
+                      48
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>60</td>
+                  <td>
+                    {" "}
+                    {calculatePayment(
+                      loanAmount,
+                      interestRate(creditScore),
+                      60
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>72</td>
+                  <td>
+                    {" "}
+                    {calculatePayment(
+                      loanAmount,
+                      interestRate(creditScore),
+                      72
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>84</td>
+                  <td>
+                    {" "}
+                    {calculatePayment(
+                      loanAmount,
+                      interestRate(creditScore),
+                      84
+                    )}
+                  </td>
+                </tr>
+              </tbody>
+            </Table>
+          </Sheet>
+        </CssVarsProvider>
       </main>
     </>
-  )
+  );
 }
