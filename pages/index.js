@@ -1,11 +1,80 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from '@/styles/Home.module.css'
+import Head from "next/head";
+import { Inter } from "@next/font/google";
+import styles from "@/styles/Home.module.css";
+import "@fontsource/public-sans";
+import { CssVarsProvider } from "@mui/joy/styles";
+import Sheet from "@mui/joy/Sheet";
+import FormControl from "@mui/joy/FormControl";
+import FormLabel from "@mui/joy/FormLabel";
+import Input from "@mui/joy/Input";
+import Slider from "@mui/joy/Slider";
+import Stack from "@mui/joy/Stack";
+import Table from "@mui/joy/Table";
+import Typography from "@mui/joy/Typography";
+import { useState } from "react";
 
-const inter = Inter({ subsets: ['latin'] })
+const marks = [
+  {
+    value: 580,
+    label: "Fair",
+    rate: 7.1,
+  },
+  {
+    value: 670,
+    label: "Good",
+    rate: 6.5,
+  },
+  {
+    value: 740,
+    label: "Very Good",
+    rate: 6.0,
+  },
+  {
+    value: 800,
+    label: "Excellent",
+    rate: 5.5,
+  },
+];
+
+function interestRate(creditScore) {
+  const bestLevel = marks.findIndex((level) => creditScore < level.value);
+  let rate;
+  if (bestLevel == 0) {
+    rate = 10.0; // Default interest rate for credit below fair
+  } else {
+    if (bestLevel > 0) {
+      rate = marks[bestLevel - 1].rate;
+    } else {
+      rate = marks[marks.length - 1].rate;
+    }
+  }
+  return rate;
+}
+
+function valueText(value) {
+  return `${value}`;
+}
+
+function calculatePayment(loanAmount, interestRatePercent, durationMonths) {
+  const monthlyInterestRate = interestRatePercent / 100 / 12;
+  const paymentPerUnit =
+    monthlyInterestRate / (1 - (1 + monthlyInterestRate) ** -durationMonths);
+  const payment = loanAmount * paymentPerUnit;
+  const paymentString = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(payment);
+  return paymentString;
+}
 
 export default function Home() {
+  const initialLoanAmount = 15000;
+  const defaultCreditScore = 600;
+  const loanTermMonths = [36, 48, 60, 72, 84];
+
+  const [loanAmount, setLoanAmount] = useState(initialLoanAmount);
+  const [creditScore, setCreditScore] = useState(defaultCreditScore);
+
   return (
     <>
       <Head>
@@ -15,109 +84,88 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>pages/index.js</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
+        <CssVarsProvider>
+          <Sheet
+            sx={{
+              width: 800,
+              height: 600,
+              mx: "auto", // margin left & right
+              my: 4, // margin top & bottom
+              py: 3, // padding top & bottom
+              px: 5, // padding left & right
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              borderRadius: "sm",
+              boxShadow: "md",
+            }}
+          >
+            <Typography level="h3">Car Loan Calculator</Typography>
+            <FormControl>
+              <FormLabel>Loan amount</FormLabel>
+              <Input
+                // html input attribute
+                name="amount"
+                type="number"
+                placeholder={initialLoanAmount.toString()}
+                onChange={(event) => setLoanAmount(event.target.value)}
               />
-            </a>
-          </div>
-        </div>
+            </FormControl>
+            <FormControl>
+              <FormLabel>Credit score</FormLabel>
+              <Slider
+                aria-label="Always visible"
+                min={300}
+                max={850}
+                step={10}
+                defaultValue={defaultCreditScore}
+                getAriaValueText={valueText}
+                marks={marks}
+                valueLabelDisplay="auto"
+                //sx={{ mx: 10 }}
+                onChange={(event) => setCreditScore(event.target.value)}
+              />
+            </FormControl>
 
-        <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
-          <div className={styles.thirteen}>
-            <Image
-              src="/thirteen.svg"
-              alt="13"
-              width={40}
-              height={31}
-              priority
-            />
-          </div>
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
-        </div>
+            <Sheet variant="outline" sx={{ width: "40%", mx: "auto", my: 2 }}>
+              <Typography level="body1">Payment table</Typography>
+              <Table
+                aria-label="payment table"
+                variant="outlined"
+                stripe="odd"
+                sx={{
+                  "& tr > *:not(:first-of-type)": { textAlign: "right" },
+                }}
+              >
+                <thead>
+                  <tr>
+                    <th style={{ width: "40%" }}>
+                      <Typography level="body2">Months</Typography>
+                    </th>
+                    <th>
+                      <Typography level="body2">Payment</Typography>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loanTermMonths.map((months) => (
+                    <tr key={months}>
+                      <td>{months}</td>
+                      <td>
+                        {calculatePayment(
+                          loanAmount,
+                          interestRate(creditScore),
+                          months
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Sheet>
+          </Sheet>
+        </CssVarsProvider>
       </main>
     </>
-  )
+  );
 }
