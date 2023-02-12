@@ -10,6 +10,7 @@ import Input from "@mui/joy/Input";
 import Slider from "@mui/joy/Slider";
 import Stack from "@mui/joy/Stack";
 import Table from "@mui/joy/Table";
+import Typography from "@mui/joy/Typography";
 import { useState } from "react";
 
 const marks = [
@@ -87,11 +88,11 @@ export default function Home() {
           <Sheet
             sx={{
               width: 800,
-              height: 500,
+              height: 600,
               mx: "auto", // margin left & right
               my: 4, // margin top & bottom
               py: 3, // padding top & bottom
-              px: 2, // padding left & right
+              px: 5, // padding left & right
               display: "flex",
               flexDirection: "column",
               gap: 2,
@@ -99,6 +100,7 @@ export default function Home() {
               boxShadow: "md",
             }}
           >
+            <Typography level="h3">Car Loan Calculator</Typography>
             <FormControl>
               <FormLabel>Loan amount</FormLabel>
               <Input
@@ -125,25 +127,24 @@ export default function Home() {
               />
             </FormControl>
 
-            <Stack
-              direction="row"
-              justifyContent="center"
-              alignItems="center"
-              spacing={2}
-            >
+            <Sheet variant="outline" sx={{ width: "40%", mx: "auto", my: 2 }}>
+              <Typography level="body1">Payment table</Typography>
               <Table
                 aria-label="payment table"
                 variant="outlined"
                 stripe="odd"
                 sx={{
-                  width: "50%",
                   "& tr > *:not(:first-of-type)": { textAlign: "right" },
                 }}
               >
                 <thead>
                   <tr>
-                    <th style={{ width: "40%" }}>Months</th>
-                    <th>Payment</th>
+                    <th style={{ width: "40%" }}>
+                      <Typography level="body2">Months</Typography>
+                    </th>
+                    <th>
+                      <Typography level="body2">Payment</Typography>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -161,7 +162,7 @@ export default function Home() {
                   ))}
                 </tbody>
               </Table>
-            </Stack>
+            </Sheet>
           </Sheet>
         </CssVarsProvider>
       </main>
