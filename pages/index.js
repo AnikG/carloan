@@ -107,18 +107,21 @@ export default function Home() {
                 onChange={(event) => setLoanAmount(event.target.value)}
               />
             </FormControl>
-            <Slider
-              aria-label="Always visible"
-              min={300}
-              max={850}
-              step={10}
-              defaultValue={defaultCreditScore}
-              getAriaValueText={valueText}
-              marks={marks}
-              valueLabelDisplay="auto"
-              //sx={{ mx: 10 }}
-              onChange={(event) => setCreditScore(event.target.value)}
-            />
+            <FormControl>
+              <FormLabel>Credit score</FormLabel>
+              <Slider
+                aria-label="Always visible"
+                min={300}
+                max={850}
+                step={10}
+                defaultValue={defaultCreditScore}
+                getAriaValueText={valueText}
+                marks={marks}
+                valueLabelDisplay="auto"
+                //sx={{ mx: 10 }}
+                onChange={(event) => setCreditScore(event.target.value)}
+              />
+            </FormControl>
 
             <Stack
               direction="row"
