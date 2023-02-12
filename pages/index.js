@@ -8,8 +8,9 @@ import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
 import Slider from "@mui/joy/Slider";
+import Stack from "@mui/joy/Stack";
 import Table from "@mui/joy/Table";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const marks = [
   {
@@ -35,7 +36,18 @@ const marks = [
 ];
 
 function interestRate(creditScore) {
-  return (1000.0 - creditScore) / 100; // TODO: replace this nonsense with a lookup in the marks[]
+  const bestLevel = marks.findIndex((level) => creditScore < level.value);
+  let rate;
+  if (bestLevel == 0) {
+    rate = 10.0; // Default interest rate for credit below fair
+  } else {
+    if (bestLevel > 0) {
+      rate = marks[bestLevel - 1].rate;
+    } else {
+      rate = marks[marks.length - 1].rate;
+    }
+  }
+  return rate;
 }
 
 function valueText(value) {
@@ -59,14 +71,6 @@ export default function Home() {
   const defaultCreditScore = 600;
   const [loanAmount, setLoanAmount] = useState(initialLoanAmount);
   const [creditScore, setCreditScore] = useState(defaultCreditScore);
-  const [paymentAmount, setPaymentAmount] = useState(0);
-
-  useEffect(() => {
-    let payment = parseFloat(loanAmount) + parseFloat(creditScore);
-    setPaymentAmount(payment);
-    console.log(loanAmount, creditScore, payment);
-    return;
-  }, [loanAmount, creditScore]);
 
   return (
     <>
@@ -80,7 +84,7 @@ export default function Home() {
         <CssVarsProvider>
           <Sheet
             sx={{
-              width: 500,
+              width: 800,
               height: 500,
               mx: "auto", // margin left & right
               my: 4, // margin top & bottom
@@ -105,8 +109,8 @@ export default function Home() {
             </FormControl>
             <Slider
               aria-label="Always visible"
-              min={500}
-              max={800}
+              min={300}
+              max={850}
               step={10}
               defaultValue={defaultCreditScore}
               getAriaValueText={valueText}
@@ -115,70 +119,78 @@ export default function Home() {
               //sx={{ mx: 10 }}
               onChange={(event) => setCreditScore(event.target.value)}
             />
-            <Table aria-label="basic table">
-              <thead>
-                <tr>
-                  <th style={{ width: "40%" }}>Months</th>
-                  <th>Payment</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>36</td>
-                  <td>
-                    {calculatePayment(
-                      loanAmount,
-                      interestRate(creditScore),
-                      36
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>48</td>
-                  <td>
-                    {" "}
-                    {calculatePayment(
-                      loanAmount,
-                      interestRate(creditScore),
-                      48
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>60</td>
-                  <td>
-                    {" "}
-                    {calculatePayment(
-                      loanAmount,
-                      interestRate(creditScore),
-                      60
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>72</td>
-                  <td>
-                    {" "}
-                    {calculatePayment(
-                      loanAmount,
-                      interestRate(creditScore),
-                      72
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>84</td>
-                  <td>
-                    {" "}
-                    {calculatePayment(
-                      loanAmount,
-                      interestRate(creditScore),
-                      84
-                    )}
-                  </td>
-                </tr>
-              </tbody>
-            </Table>
+
+            <Stack
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              spacing={2}
+            >
+              <Table aria-label="basic table" sx={{ width: "50%" }}>
+                <thead>
+                  <tr>
+                    <th style={{ width: "40%" }}>Months</th>
+                    <th>Payment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>36</td>
+                    <td>
+                      {calculatePayment(
+                        loanAmount,
+                        interestRate(creditScore),
+                        36
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>48</td>
+                    <td>
+                      {" "}
+                      {calculatePayment(
+                        loanAmount,
+                        interestRate(creditScore),
+                        48
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>60</td>
+                    <td>
+                      {" "}
+                      {calculatePayment(
+                        loanAmount,
+                        interestRate(creditScore),
+                        60
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>72</td>
+                    <td>
+                      {" "}
+                      {calculatePayment(
+                        loanAmount,
+                        interestRate(creditScore),
+                        72
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>84</td>
+                    <td>
+                      {" "}
+                      {calculatePayment(
+                        loanAmount,
+                        interestRate(creditScore),
+                        84
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              </Table>
+            </Stack>
           </Sheet>
         </CssVarsProvider>
       </main>
