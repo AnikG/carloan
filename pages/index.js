@@ -69,6 +69,8 @@ function calculatePayment(loanAmount, interestRatePercent, durationMonths) {
 export default function Home() {
   const initialLoanAmount = 15000;
   const defaultCreditScore = 600;
+  const loanTermMonths = [36, 48, 60, 72, 84];
+
   const [loanAmount, setLoanAmount] = useState(initialLoanAmount);
   const [creditScore, setCreditScore] = useState(defaultCreditScore);
 
@@ -129,7 +131,15 @@ export default function Home() {
               alignItems="center"
               spacing={2}
             >
-              <Table aria-label="basic table" sx={{ width: "50%" }}>
+              <Table
+                aria-label="payment table"
+                variant="outlined"
+                stripe="odd"
+                sx={{
+                  width: "50%",
+                  "& tr > *:not(:first-of-type)": { textAlign: "right" },
+                }}
+              >
                 <thead>
                   <tr>
                     <th style={{ width: "40%" }}>Months</th>
@@ -137,60 +147,18 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>36</td>
-                    <td>
-                      {calculatePayment(
-                        loanAmount,
-                        interestRate(creditScore),
-                        36
-                      )}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>48</td>
-                    <td>
-                      {" "}
-                      {calculatePayment(
-                        loanAmount,
-                        interestRate(creditScore),
-                        48
-                      )}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>60</td>
-                    <td>
-                      {" "}
-                      {calculatePayment(
-                        loanAmount,
-                        interestRate(creditScore),
-                        60
-                      )}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>72</td>
-                    <td>
-                      {" "}
-                      {calculatePayment(
-                        loanAmount,
-                        interestRate(creditScore),
-                        72
-                      )}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>84</td>
-                    <td>
-                      {" "}
-                      {calculatePayment(
-                        loanAmount,
-                        interestRate(creditScore),
-                        84
-                      )}
-                    </td>
-                  </tr>
+                  {loanTermMonths.map((months) => (
+                    <tr key={months}>
+                      <td>{months}</td>
+                      <td>
+                        {calculatePayment(
+                          loanAmount,
+                          interestRate(creditScore),
+                          months
+                        )}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </Table>
             </Stack>
