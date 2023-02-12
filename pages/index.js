@@ -129,6 +129,10 @@ export default function Home() {
 
             <Sheet variant="outline" sx={{ width: "40%", mx: "auto", my: 2 }}>
               <Typography level="body1">Payment table</Typography>
+              <Typography level="body2">{`Interest rate: ${interestRate(
+                creditScore
+              )}%`}</Typography>
+
               <Table
                 aria-label="payment table"
                 variant="outlined"
